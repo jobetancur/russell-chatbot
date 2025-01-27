@@ -11,6 +11,7 @@ export const MESSAGES ={
                 - Número de contacto
                 - Horario tentativo
                 - Servicio que requiere (Revisoría Fiscal o Servicios Contables)
+                - Mensaje adicional del cliente
             3. Clasificar conversaciones: Identifica el servicio que el cliente necesita y clasifícalo como uno de los siguientes:
                 - Revisoría Fiscal
                 - Servicios Contables

@@ -20,17 +20,20 @@ export const retrieverTool = tool(
   );
 
 export const saveClientDataTool = tool(
-    async ({ name, phone, email }: { name: string, phone: string, email: string }) => {
-        const saveCliente = await saveClientData(name, phone, email);
+    async ({ name, phone, email, service, message, schedule  }: { name: string, phone: string, email: string, service: string, message: string, schedule: string  }) => {
+        const saveCliente = await saveClientData(name, phone, email, service, message, schedule);
         return saveCliente;
     },
     {
         name: 'guardar_datos_del_cliente',
-        description: 'Guarda los datos del cliente en la base de datos. Esto lo debes hacer para garantizar un futuro contacto con el cliente por parte de un asesor real. Importante, esta tool solo se debe ejecutar cuando tengas el nombre, teléfono y correo del cliente. No la ejecutes si no tienes todos los datos completos.',
+        description: 'Guarda los datos del cliente en la base de datos. Esto lo debes hacer para garantizar un futuro contacto con el cliente por parte de un asesor real. Importante, esta tool solo se debe ejecutar cuando tengas el nombre, teléfono, correo del cliente, servicio en el que está interesado y el horario en que desea ser contactado. No la ejecutes si no tienes todos los datos completos.',
         schema: z.object({
             name: z.string(),
             phone: z.string(),
             email: z.string(),
+            service: z.string(),
+            message: z.string(),
+            schedule: z.string(),
         }),
     }
 );

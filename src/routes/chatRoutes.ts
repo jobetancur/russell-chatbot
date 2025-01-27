@@ -24,7 +24,7 @@ router.post("/russell/send-message", async (req, res) => {
 
   try {
     const message = await client.messages.create({
-      from: process.env.TWILIO_WHATSAPP_NUMBER,
+      from: "whatsapp:+14155238886",
       to: `whatsapp:${to}`,
       body: body,
     });
@@ -82,10 +82,13 @@ router.post("/russell/receive-message", async (req, res) => {
     ].content as string;
     console.log("Mensaje enviado:", responseMessage);
 
+    console.log("from", from);
+    console.log("to", to);
+
     try {
       const message = await client.messages.create({
         body: responseMessage,
-        from: to,
+        from: 'whatsapp:+14155238886',
         to: from,
       });
       // console.log('Message sent successfully:', message.sid);

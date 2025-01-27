@@ -19,7 +19,7 @@ export const searchVectors = async (query: string) => {
         tableName: 'documents',
         queryName: 'match_documents',
     });
-    console.log("hola");
+    console.log("Petición de vectores");
 
     const results = await vectorStore.similaritySearch(query, 4);
     

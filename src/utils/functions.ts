@@ -10,16 +10,16 @@ const supabaseKey = process.env.SUPABASE_KEY as string;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Guardar los datos del cliente, nombre, telefono y correo
-export async function saveClientData(name: string, phone: string, email: string) {
+export async function saveClientData(name: string, phone: string, email: string, service: string, message: string, schedule: string) {
   try {
     const { data, error } = await supabase
       .from('clients')
       .insert([
-        { name: name, phone: phone, email: email }
+        { name: name, phone: phone, email: email, service: service, message: message, schedule: schedule },
         ]);
     
     console.log('Datos guardados en Supabase:', name, phone, email);
-    sendEmailNotification(name, phone, email);
+    sendEmailNotification(name, phone, email, service, message, schedule);
 
     if (error) {
         // Mostrar error en consola si no se guardan los datos
@@ -33,7 +33,7 @@ export async function saveClientData(name: string, phone: string, email: string)
     }
 }
 
-async function sendEmailNotification(name: string, phone: string, email: string) {
+async function sendEmailNotification(name: string, phone: string, email: string, service: string, message: string, schedule: string) {
   const transporter = nodemailer.createTransport({
     host: "smtp.sendgrid.net",
     port: 587,
@@ -45,10 +45,10 @@ async function sendEmailNotification(name: string, phone: string, email: string)
 
   const mailOptions = {
     from: '"¡Nuevo contacto!" <grow@ultimmarketing.com>',
-    to: 'margarita.d@ultimmarketing.com',
-    cc: ['david@ultimmarketing.com,', 'elizabeth@ultimmarketing.com', 'anamaria.posada@csdental.com', 'isabella@ultimmarketing.com', 'intakes@ultimmarketing.com'],
-    subject: 'Carestream Dental - Nuevo cliente registrado de WhatsApp',
-    text: `Nombre: ${name}\nTeléfono: ${phone}\nCorreo: ${email}\nDatos recopilados por AI Carestream Dental.`,
+    to: 'alejandro.b@ultimmarketing.com',
+    // cc: ['david@ultimmarketing.com,', 'elizabeth@ultimmarketing.com', 'anamaria.posada@csdental.com', 'isabella@ultimmarketing.com', 'intakes@ultimmarketing.com'],
+    subject: 'Russell Bedford - Nuevo cliente registrado de WhatsApp',
+    text: `¡Nuevo cliente registrado de WhatsApp! \n\nNombre: ${name} \nTeléfono: ${phone} \nCorreo: ${email} \nServicio: ${service} \nMensaje: ${message} \nHorario: ${schedule}`,
   };
 
   try {
@@ -62,4 +62,4 @@ async function sendEmailNotification(name: string, phone: string, email: string)
 };
 
 // Prueba de Mail
-// sendEmailNotification("Alejandro", "3045655669", "alejandro@gmail.com");
+// sendEmailNotification('Alejandro', '1234567890', 'alejandro.b@ultimmarketing.com', 'Fiscal', 'Mensaje de prueba', 'Mañana a las 10:00 am');
