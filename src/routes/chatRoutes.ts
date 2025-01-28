@@ -60,7 +60,7 @@ router.post("/russell/receive-message", async (req, res) => {
   try {
     let incomingMessage = req.body.Body;
 
-    console.log("Número para thread_id", from);
+    // console.log("Número para thread_id", from);
 
     const config = {
       configurable: {
@@ -80,10 +80,10 @@ router.post("/russell/receive-message", async (req, res) => {
     const responseMessage = agentOutput.messages[
       agentOutput.messages.length - 1
     ].content as string;
-    console.log("Mensaje enviado:", responseMessage);
+    // console.log("Mensaje enviado:", responseMessage);
 
-    console.log("from", from);
-    console.log("to", to);
+    // console.log("from", from);
+    // console.log("to", to);
 
     try {
       const message = await client.messages.create({

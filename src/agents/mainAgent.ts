@@ -4,6 +4,7 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { BaseMessage, SystemMessage } from "@langchain/core/messages";
 import { MemorySaver } from "@langchain/langgraph";
 import { 
+    retrieverTool,
     saveClientDataTool,
 } from '../tools/tools';
 import { MESSAGES } from '../config/constants';
@@ -19,6 +20,7 @@ const llm = new ChatOpenAI({
 });
 
 const tools = [
+    retrieverTool,
     saveClientDataTool,
 ];
 

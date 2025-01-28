@@ -1,8 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import {
-    saveClientData
-} from '../utils/functions';
+import { saveClientData } from '../utils/functions';
 import { searchVectors } from "../utils/retrievers";
 
 export const retrieverTool = tool(
@@ -12,7 +10,7 @@ export const retrieverTool = tool(
     },
     {
       name: "retriever",
-      description: "Eres una herramienta de consulta de información sobre Russell Beford. Tu tarea es buscar y extraer solo la información relevante de la base de datos, respondiendo a las consultas de los clientes. Siempre entrega el resultado bien formateado para que sea facil de leer.",    
+      description: "Eres una herramienta de consulta de información sobre Russell Beford. Tu tarea es buscar y extraer solo la información relevante de la base de datos, respondiendo a las consultas de los clientes. Siempre entrega el resultado bien formateado para que sea facil de leer. Usa esta herramienta para responder preguntas específicas sobre los servicios de Revisoría Fiscal y Servicios Contables que ofrece Russell Bedford Colombia.",    
       schema: z.object({
         query: z.string(),
       }),
