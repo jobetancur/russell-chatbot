@@ -27,7 +27,7 @@ export const searchVectors = async (query: string) => {
         return results.map((doc: { pageContent: any; }) => doc.pageContent).join('\n\n');
     }
 
-    console.log(combineDocuments(results));
+    // console.log(combineDocuments(results));
 
     return combineDocuments(results);
 }

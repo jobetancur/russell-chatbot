@@ -60,6 +60,8 @@ router.post("/russell/receive-message", async (req, res) => {
   try {
     let incomingMessage = req.body.Body;
 
+    console.log("Mensaje recibido:", incomingMessage);
+
     const config = {
       configurable: {
         thread_id: from,
@@ -78,6 +80,8 @@ router.post("/russell/receive-message", async (req, res) => {
     const responseMessage = agentOutput.messages[
       agentOutput.messages.length - 1
     ].content as string;
+
+    console.log("Respuesta IA:", responseMessage);
 
     try {
       const message = await client.messages.create({
