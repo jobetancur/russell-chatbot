@@ -45,8 +45,8 @@ async function sendEmailNotification(name: string, phone: string, email: string,
 
   const mailOptions = {
     from: '"¡Nuevo contacto!" <grow@ultimmarketing.com>',
-    to: 'alejandro.b@ultimmarketing.com',
-    // cc: ['david@ultimmarketing.com,', 'elizabeth@ultimmarketing.com', 'anamaria.posada@csdental.com', 'isabella@ultimmarketing.com', 'intakes@ultimmarketing.com'],
+    to: 'saralopez@rbcol.co',
+    cc: ['mercadeo.gct@rbcol.co', 'davidlopez@rbcol.co', 'daniel@ultimmarketing.com', 'alejandro.b@ultimmarketing.com'],
     subject: 'Russell Bedford - Nuevo cliente registrado de WhatsApp',
     text: `¡Nuevo cliente registrado de WhatsApp! \n\nNombre: ${name} \nTeléfono: ${phone} \nCorreo: ${email} \nServicio: ${service} \nMensaje: ${message} \nAgenda: ${schedule}`,
   };
