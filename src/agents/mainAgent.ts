@@ -17,7 +17,7 @@ const llm = new ChatOpenAI({
     temperature: 0,
     model: "gpt-4o",
     apiKey: process.env.OPENAI_API_KEY,
-    maxTokens: 280,
+    maxTokens: 260,
 });
 
 const tools = [
