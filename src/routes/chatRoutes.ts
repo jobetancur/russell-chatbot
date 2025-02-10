@@ -17,6 +17,7 @@ const MessagingResponse = twilio.twiml.MessagingResponse; // mandar un texto sim
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(accountSid, authToken); // mandar un texto con media
+// ElevenLabs Client
 const elevenlabsClient = new ElevenLabsClient({
   apiKey: process.env.ELEVENLABS_API_KEY,
 });
