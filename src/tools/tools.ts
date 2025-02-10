@@ -1,6 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { saveClientData } from '../utils/functions';
+import { saveClientData, contactCustomerService } from '../utils/functions';
 import { searchVectors } from "../utils/retrievers";
 
 export const retrieverTool = tool(
@@ -33,5 +33,17 @@ export const saveClientDataTool = tool(
             message: z.string(),
             schedule: z.string(),
         }),
+    }
+);
+
+export const contactTool = tool(
+    async () => {
+        const contact = contactCustomerService();
+        return contact;
+    },
+    {
+        name: 'contacto_servicio_cliente',
+        description: 'Brinda el canal de contacto para otros servicios diferentes a los servicios contables y de revisoría fiscal ofrecidos por Russell Bedford Medellín. Esta tool se debe ejecutar cuando el cliente solicita información sobre otros servicios diferentes a los mencionados anteriormente.',
+        schema: z.object({}),
     }
 );

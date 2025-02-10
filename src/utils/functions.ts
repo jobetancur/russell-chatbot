@@ -63,3 +63,13 @@ async function sendEmailNotification(name: string, phone: string, email: string,
 
 // Prueba de Mail
 // sendEmailNotification('Alejandro', '1234567890', 'alejandro.b@ultimmarketing.com', 'Fiscal', 'Mensaje de prueba', 'Mañana a las 10:00 am');
+
+// Función para brindar canal de contacto de otros servicios diferentes a servicios contables y de revisoría fiscal ofrecidos por Russell Bedford
+export function contactCustomerService() {
+  const customerServiceData = {
+    whatsapp: "https://wa.me/573186925681",
+    description: "Linea de atención especializada para otros servicios diferentes a contabilidad y revisoría fiscal.",
+  };
+
+  return JSON.stringify(customerServiceData);
+}

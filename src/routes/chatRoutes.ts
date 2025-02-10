@@ -6,6 +6,8 @@ import twilio from "twilio";
 import { saveChatHistory } from "../utils/saveChatHistory";
 // axios
 import axios from "axios";
+// Eleven Labs
+import { ElevenLabsClient } from 'elevenlabs';
 
 dotenv.config();
 
@@ -15,6 +17,27 @@ const MessagingResponse = twilio.twiml.MessagingResponse; // mandar un texto sim
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(accountSid, authToken); // mandar un texto con media
+const elevenlabsClient = new ElevenLabsClient({
+  apiKey: process.env.ELEVENLABS_API_KEY,
+});
+
+const createAudioStreamFromText = async (text: string): Promise<Buffer> => {
+  const audioStream = await elevenlabsClient.generate({
+    voice: "Marian",
+    model_id: "eleven_multilingual_v2",
+    text,
+  });
+
+  const chunks: Buffer[] = [];
+  for await (const chunk of audioStream) {
+    chunks.push(chunk);
+  }
+  
+  const content = Buffer.concat(chunks);
+  return content;
+};
+
+
 
 // Ruta para enviar mensajes de WhatsApp
 router.post("/russell/send-message", async (req, res) => {
