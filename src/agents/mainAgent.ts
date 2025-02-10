@@ -6,6 +6,7 @@ import { MemorySaver } from "@langchain/langgraph";
 import { 
     retrieverTool,
     saveClientDataTool,
+    contactTool,
 } from '../tools/tools';
 import { MESSAGES } from '../config/constants';
 
@@ -23,6 +24,7 @@ const llm = new ChatOpenAI({
 const tools = [
     retrieverTool,
     saveClientDataTool,
+    contactTool,
 ];
 
 const modifyMessages = (messages: BaseMessage[]) => {
