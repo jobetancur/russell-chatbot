@@ -31,7 +31,7 @@ const elevenlabsClient = new ElevenLabsClient({
 const createAudioStreamFromText = async (text: string): Promise<Buffer> => {
   const audioStream = await elevenlabsClient.generate({
     voice: "Andrea",
-    model_id: "eleven_multilingual_v2",
+    model_id: "eleven_flash_v2_5",
     text,
   });
 
@@ -154,7 +154,7 @@ router.post("/russell/receive-message", async (req, res) => {
     await saveChatHistory(fromNumber, responseMessage, false);
 
     // Si la respuesta es menor a 400 caracteres && no contiene números, hacer TTS y enviar el audio
-    if (responseMessage.length <= 400 && !/\d/.test(responseMessage)) {
+    if (responseMessage.length <= 600 && !/\d/.test(responseMessage)) {
       console.log('Entró a enviar audio');
       try {
         const audioBuffer = await createAudioStreamFromText(responseMessage);
