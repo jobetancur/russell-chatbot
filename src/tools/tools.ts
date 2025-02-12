@@ -2,6 +2,7 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { saveClientData, contactCustomerService } from '../utils/functions';
 import { searchVectors } from "../utils/retrievers";
+import { setAvailableForAudio } from "../utils/setAvailableForAudio";
 
 export const retrieverTool = tool(
     async ({ query }: { query: string }) => {
@@ -46,4 +47,18 @@ export const contactTool = tool(
         description: 'Brinda el canal de contacto para otros servicios diferentes a los servicios contables y de revisoría fiscal ofrecidos por Russell Bedford Medellín. Esta tool se debe ejecutar cuando el cliente solicita información sobre otros servicios diferentes a los mencionados anteriormente.',
         schema: z.object({}),
     }
+);
+
+export const setAvailableForAudioTool = tool(
+  async ({ isAvailableForAudio }: { isAvailableForAudio: boolean }) => {
+    const preferences = setAvailableForAudio(isAvailableForAudio);
+    return preferences;
+  },
+  {
+    name: "can_the_client_answer_audios",
+    description: "si el cliente manifiesta una preferencia por recibir la informacion por audio o por texto o que no puede escuchar audios, si el usuario no peude escuchar audios setea en la base de datos FALSE, si puede escuchar audios setea en la base de datos TRUE. Además, debes enviar nuevamente al cliente el último mensaje que recibió en texto para que lo pueda leer en caso de no poder recibir audios.",
+    schema: z.object({
+      isAvailableForAudio: z.boolean(),
+    }),
+  }
 );

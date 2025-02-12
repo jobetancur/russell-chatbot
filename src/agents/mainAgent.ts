@@ -7,6 +7,7 @@ import {
     retrieverTool,
     saveClientDataTool,
     contactTool,
+    setAvailableForAudioTool,
 } from '../tools/tools';
 import { MESSAGES } from '../config/constants';
 
@@ -25,6 +26,7 @@ const tools = [
     retrieverTool,
     saveClientDataTool,
     contactTool,
+    setAvailableForAudioTool,
 ];
 
 const modifyMessages = (messages: BaseMessage[]) => {

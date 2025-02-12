@@ -11,6 +11,7 @@ import { OpenAI, toFile } from 'openai';
 import fetch from 'node-fetch';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { ElevenLabsClient } from 'elevenlabs';
+import { getAvailableForAudio } from "../utils/getAvailableForAudio";
 
 dotenv.config();
 
@@ -56,6 +57,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage();
 
+let exportedFromNumber: string | undefined;
+
 // Ruta para enviar mensajes de WhatsApp
 router.post("/russell/send-message", async (req, res) => {
   const { to, body } = req.body;
@@ -96,6 +99,8 @@ router.post("/russell/receive-message", async (req, res) => {
   // Numero de telefono que pasa de "whatsapp:+57XXXXXXXXX" a "+57XXXXXXXXX"
   const fromNumber = from.slice(fromColonIndex + 1);
   const toNumber = to.slice(toColonIndex + 1);
+
+  exportedFromNumber = fromNumber
 
   try {
     let incomingMessage
@@ -153,8 +158,10 @@ router.post("/russell/receive-message", async (req, res) => {
 
     await saveChatHistory(fromNumber, responseMessage, false);
 
+    const isAvailableForAudio = await getAvailableForAudio(fromNumber);
+
     // Si la respuesta es menor a 400 caracteres && no contiene números, hacer TTS y enviar el audio
-    if (responseMessage.length <= 600 && !/\d/.test(responseMessage)) {
+    if ( responseMessage.length <= 600 && !/\d/.test(responseMessage) && isAvailableForAudio ) {
       console.log('Entró a enviar audio');
       try {
         const audioBuffer = await createAudioStreamFromText(responseMessage);
@@ -231,3 +238,5 @@ router.get("/russell", (req, res) => {
 });
 
 export default router;
+
+export {exportedFromNumber};
