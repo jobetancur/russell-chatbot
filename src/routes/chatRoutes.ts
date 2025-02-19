@@ -160,8 +160,13 @@ router.post("/russell/receive-message", async (req, res) => {
 
     const isAvailableForAudio = await getAvailableForAudio(fromNumber);
 
-    // Si la respuesta es menor a 400 caracteres && no contiene números, hacer TTS y enviar el audio
-    if ( responseMessage.length <= 600 && !/\d/.test(responseMessage) && isAvailableForAudio ) {
+    // Si la respuesta es menor a 600 caracteres && no contiene números, hacer TTS y enviar el audio
+    if ( 
+      responseMessage.length <= 600 && // Menor a 600 caracteres
+      !/\d/.test(responseMessage) && // No contiene números
+      !/\b(?:[A-Z]{2,}|\b(?:[A-Z]\.){2,}[A-Z]?)\b/.test(responseMessage) && // No contiene siglas
+      isAvailableForAudio // El cliente puede recibir audios
+    ) {
       console.log('Entró a enviar audio');
       try {
         const audioBuffer = await createAudioStreamFromText(responseMessage);

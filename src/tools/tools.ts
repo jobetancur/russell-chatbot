@@ -1,6 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { saveClientData, contactCustomerService } from '../utils/functions';
+import { saveClientData, contactCustomerService, validateCity } from '../utils/functions';
 import { searchVectors } from "../utils/retrievers";
 import { setAvailableForAudio } from "../utils/setAvailableForAudio";
 
@@ -19,8 +19,8 @@ export const retrieverTool = tool(
   );
 
 export const saveClientDataTool = tool(
-    async ({ name, phone, email, service, message, schedule  }: { name: string, phone: string, email: string, service: string, message: string, schedule: string  }) => {
-        const saveCliente = await saveClientData(name, phone, email, service, message, schedule);
+    async ({ name, phone, email, city, service, message, schedule  }: { name: string, phone: string, email: string, city: string, service: string, message: string, schedule: string  }) => {
+        const saveCliente = await saveClientData(name, phone, email, city, service, message, schedule);
         return saveCliente;
     },
     {
@@ -30,6 +30,7 @@ export const saveClientDataTool = tool(
             name: z.string(),
             phone: z.string(),
             email: z.string(),
+            city: z.string(),
             service: z.string(),
             message: z.string(),
             schedule: z.string(),
@@ -59,6 +60,20 @@ export const setAvailableForAudioTool = tool(
     description: "si el cliente manifiesta una preferencia por recibir la informacion por audio o por texto o que no puede escuchar audios, si el usuario no peude escuchar audios setea en la base de datos FALSE, si puede escuchar audios setea en la base de datos TRUE. Además, debes enviar nuevamente al cliente el último mensaje que recibió en texto para que lo pueda leer en caso de no poder recibir audios.",
     schema: z.object({
       isAvailableForAudio: z.boolean(),
+    }),
+  }
+);
+
+export const validateCityTool = tool(
+  async ({ city }: { city: string }) => {
+    const cityValidation = validateCity(city);
+    return cityValidation;
+  },
+  {
+    name: "validate_city",
+    description: "Valida si la ciudad ingresada por el cliente es una ciudad en la que Russell Bedford tiene presencia. Si la ciudad no esta en los departamentos de Antioquia, Córdoba, Chocó, Norte de Santander, Guainía, Boyacá o Arauca, redirige al cliente a la línea de atención correspondiente. Si la ciudad es pertenece a uno de estos departamentos, pregunta si desea agendar una reunión.",
+    schema: z.object({
+      city: z.string(),
     }),
   }
 );
