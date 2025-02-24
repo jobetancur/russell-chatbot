@@ -5,50 +5,50 @@ import { searchVectors } from "../utils/retrievers";
 import { setAvailableForAudio } from "../utils/setAvailableForAudio";
 
 export const retrieverTool = tool(
-    async ({ query }: { query: string }) => {
-      const results = await searchVectors(query);
-      return results;
-    },
-    {
-      name: "retriever",
-      description: "Eres una herramienta de consulta de información sobre Russell Beford. Tu tarea es buscar y extraer solo la información relevante de la base de datos, respondiendo a las consultas de los clientes. Siempre entrega el resultado bien formateado para que sea facil de leer. Usa esta herramienta para responder preguntas específicas sobre los servicios de Revisoría Fiscal y Servicios Contables que ofrece Russell Bedford Colombia.",    
-      schema: z.object({
-        query: z.string(),
-      }),
-    }
-  );
+  async ({ query }: { query: string }) => {
+    const results = await searchVectors(query);
+    return results;
+  },
+  {
+    name: "retriever",
+    description: "Eres una herramienta de consulta de información sobre Russell Beford. Tu tarea es buscar y extraer solo la información relevante de la base de datos, respondiendo a las consultas de los clientes. Siempre entrega el resultado bien formateado para que sea facil de leer. Usa esta herramienta para responder preguntas específicas sobre los servicios de Revisoría Fiscal y Servicios Contables que ofrece Russell Bedford Colombia.",    
+    schema: z.object({
+      query: z.string(),
+    }),
+  }
+);
 
 export const saveClientDataTool = tool(
-    async ({ name, phone, email, city, service, message, schedule, appointment_type }: { name: string, phone: string, email: string, city: string, service: string, message: string, schedule: string, appointment_type: string  }) => {
-        const saveCliente = await saveClientData(name, phone, email, city, service, message, schedule, appointment_type);
-        return saveCliente;
-    },
-    {
-        name: 'guardar_datos_del_cliente',
-        description: 'Guarda los datos del cliente en la base de datos. Esto lo debes hacer para garantizar un futuro contacto con el cliente por parte de un asesor real. Importante, esta tool solo se debe ejecutar cuando tengas el nombre, celular, correo del cliente, ciudad en donde requiere el servicio, servicio en el que está interesado y la fecha junto con la hora en que desea ser contactado. No la ejecutes si no tienes todos los datos completos.',
-        schema: z.object({
-            name: z.string(),
-            phone: z.string(),
-            email: z.string(),
-            city: z.string(),
-            service: z.string(),
-            message: z.string(),
-            schedule: z.string(),
-            appointment_type: z.string(),
-        }),
-    }
+  async ({ name, phone, email, city, service, message, schedule, appointment_type }: { name: string, phone: string, email: string, city: string, service: string, message: string, schedule: string, appointment_type: string  }) => {
+    const saveCliente = await saveClientData(name, phone, email, city, service, message, schedule, appointment_type);
+    return saveCliente;
+  },
+  {
+    name: 'guardar_datos_del_cliente',
+    description: 'Guarda los datos del cliente en la base de datos. Esto lo debes hacer para garantizar un futuro contacto con el cliente por parte de un asesor real. Importante, esta tool solo se debe ejecutar cuando tengas el nombre, celular, correo del cliente, ciudad en donde requiere el servicio, servicio en el que está interesado y la fecha junto con la hora en que desea ser contactado. No la ejecutes si no tienes todos los datos completos.',
+    schema: z.object({
+        name: z.string(),
+        phone: z.string(),
+        email: z.string(),
+        city: z.string(),
+        service: z.string(),
+        message: z.string(),
+        schedule: z.string(),
+        appointment_type: z.string(),
+    }),
+  }
 );
 
 export const contactTool = tool(
-    async () => {
-        const contact = contactCustomerService();
-        return contact;
-    },
-    {
-        name: 'contacto_servicio_cliente',
-        description: 'Brinda el canal de contacto para otros servicios diferentes a los servicios contables y de revisoría fiscal ofrecidos por Russell Bedford Medellín. Esta tool se debe ejecutar cuando el cliente solicita información sobre otros servicios diferentes a los mencionados anteriormente.',
-        schema: z.object({}),
-    }
+  async () => {
+    const contact = contactCustomerService();
+    return contact;
+  },
+  {
+    name: 'contacto_servicio_cliente',
+    description: 'Brinda el canal de contacto para otros servicios diferentes a los servicios contables y de revisoría fiscal ofrecidos por Russell Bedford Medellín. Esta tool se debe ejecutar cuando el cliente solicita información sobre otros servicios diferentes a los mencionados anteriormente.',
+    schema: z.object({}),
+  }
 );
 
 export const setAvailableForAudioTool = tool(
