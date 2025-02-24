@@ -12,16 +12,16 @@ const supabaseKey = process.env.SUPABASE_KEY as string;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Guardar los datos del cliente, nombre, telefono y correo
-export async function saveClientData(name: string, phone: string, email: string, city: string, service: string, message: string, schedule: string) {
+export async function saveClientData(name: string, phone: string, email: string, city: string, service: string, message: string, schedule: string, appointment_type: string) {
   try {
     const { data, error } = await supabase
       .from('clients')
       .insert([
-        { name: name, phone: phone, email: email, city: city, service: service, message: message, schedule: schedule },
+        { name: name, phone: phone, email: email, city: city, service: service, message: message, schedule: schedule, appointment_type: appointment_type },
         ]);
     
     console.log('Datos guardados en Supabase:', name, phone, city);
-    sendEmailNotification(name, phone, email, city, service, message, schedule);
+    sendEmailNotification(name, phone, email, city, service, message, schedule, appointment_type);
 
     if (error) {
         // Mostrar error en consola si no se guardan los datos
@@ -35,7 +35,7 @@ export async function saveClientData(name: string, phone: string, email: string,
     }
 }
 
-async function sendEmailNotification(name: string, phone: string, email: string, city: string, service: string, message: string, schedule: string) {
+async function sendEmailNotification(name: string, phone: string, email: string, city: string, service: string, message: string, schedule: string, appointment_type: string) {
   const transporter = nodemailer.createTransport({
     host: "smtp.sendgrid.net",
     port: 587,
@@ -50,7 +50,7 @@ async function sendEmailNotification(name: string, phone: string, email: string,
     to: 'saralopez@rbcol.co',
     cc: ['mercadeo.gct@rbcol.co', 'davidlopez@rbcol.co', 'daniel@ultimmarketing.com', 'alejandro.b@ultimmarketing.com'],
     subject: 'Russell Bedford - Nuevo cliente registrado de WhatsApp',
-    text: `¡Nuevo cliente registrado de WhatsApp! \n\nNombre: ${name} \nTeléfono: ${phone} \nCorreo: ${email} \nCiudad: ${city} \nServicio: ${service} \nMensaje: ${message} \nAgenda: ${schedule}`,
+    text: `¡Nuevo cliente registrado de WhatsApp! \n\nNombre: ${name} \nCelular: ${phone} \nCorreo: ${email} \nCiudad: ${city} \nServicio: ${service} \nMensaje: ${message} \nAgenda: ${schedule} \nTipo de cita: ${appointment_type}`,
   };
 
   try {
