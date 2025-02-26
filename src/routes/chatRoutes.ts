@@ -67,7 +67,7 @@ router.post("/russell/send-message", async (req, res) => {
 
   try {
     const message = await client.messages.create({
-      from: "whatsapp:+14155238886",
+      from: "whatsapp:+5745012081",
       to: `whatsapp:${to}`,
       body: body,
     });
@@ -92,6 +92,8 @@ router.post("/russell/receive-message", async (req, res) => {
   // console.log('Mensaje recibido:', req.body);
   const from = req.body.From;
   const to = req.body.To;
+
+  console.log('from:', from, 'to:', to);
 
   // Parseo de numeros de telefono
   const fromColonIndex = from.indexOf(":");
@@ -212,7 +214,7 @@ router.post("/russell/receive-message", async (req, res) => {
       try {
         const message = await client.messages.create({
           body: responseMessage,
-          from: 'whatsapp:+14155238886',
+          from: 'whatsapp:+5745012081',
           to: from,
         });
       } catch (error) {
