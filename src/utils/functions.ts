@@ -3,6 +3,8 @@ import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 // Import colombia.json file
 import colombia from '../data/colombia.json';
+import { setChatHistoryName } from './setChatHistoryName';
+import { setChatHistoryService } from './setChatHistoryService';
 
 dotenv.config();
 
@@ -22,6 +24,9 @@ export async function saveClientData(name: string, phone: string, email: string,
     
     console.log('Datos guardados en Supabase:', name, phone, city);
     sendEmailNotification(name, phone, email, city, service, message, schedule, appointment_type);
+
+    await setChatHistoryName(name);
+    await setChatHistoryService(service);
 
     if (error) {
         // Mostrar error en consola si no se guardan los datos
