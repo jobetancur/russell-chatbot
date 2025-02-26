@@ -229,14 +229,8 @@ router.post("/russell/receive-message", async (req, res) => {
   }
 });
 
-router.get("/", (req, res) => {
-  res.send(
-    "Petición GET de prueba para validar que el servidor está corriendo."
-  );
-});
-
 // Ruta principal
-router.get("/russell", (req, res) => {
+router.get("/russell/chat-test", (req, res) => {
   res.send(
     "Servidor de Russell Bedford funcionando correctamente con Typescript y Express."
   );
