@@ -60,7 +60,7 @@ const storage = getStorage();
 let exportedFromNumber: string | undefined;
 
 // Ruta para enviar mensajes de WhatsApp
-router.post("/russell/send-message", async (req, res) => {
+router.post("/russell-chat/send-message", async (req, res) => {
   const { to, body } = req.body;
 
   console.log(req.body);
@@ -86,7 +86,7 @@ router.post("/russell/send-message", async (req, res) => {
 });
 
 // chat endpoint para recibir mensajes con twilio
-router.post("/russell/receive-message", async (req, res) => {
+router.post("/russell-chat/receive-message", async (req, res) => {
 
   const twiml = new MessagingResponse();
   // console.log('Mensaje recibido:', req.body);
@@ -232,9 +232,9 @@ router.post("/russell/receive-message", async (req, res) => {
 });
 
 // Ruta principal
-router.get("/russell/chat-test", (req, res) => {
+router.get("/russell-chat/chat-test", (req, res) => {
   res.send(
-    "Servidor de Russell Bedford funcionando correctamente con Typescript y Express."
+    "Chat de Russell Bedford funcionando correctamente con Typescript y Express."
   );
 });
 

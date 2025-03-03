@@ -140,3 +140,30 @@ export async function updateNotifications() {
     console.error(error);
   }
 }
+
+// Función si quien escribe pregunta por ofertas laborales
+export function jobOpportunities() {
+  const jobOpportunitiesData = `
+    ¡Gracias por tu interés en formar parte de nuestro equipo!
+    Si deseas aplicar a una de nuestras vacantes, envíanos tu hoja de vida al correo correspondiente según tu ciudad:
+    
+     Medellín: talentohumano.gct@rbcol.co
+    
+     Bogotá: gestionhumana@rbcol.co
+    
+     Cali: gestionhumana.cali@rbcol.co
+    
+     Cartagena: talentohumanorb@rbcol.co
+    
+     Barranquilla: talentohumanorb@rbcol.co
+    
+     Instrucciones para el envío:
+    
+    Indica tu profesión en el asunto del correo.
+    En el cuerpo del mensaje, menciona tu aspiración salarial.
+    Si tu perfil se ajusta a alguna de nuestras vacantes, el equipo de Talento Humano de la ciudad correspondiente se pondrá en contacto contigo.
+    ¡Esperamos recibir tu aplicación pronto!
+  `;
+  
+  return JSON.stringify(jobOpportunitiesData);
+}

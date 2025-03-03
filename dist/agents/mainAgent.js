@@ -3,7 +3,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { SystemMessage } from "@langchain/core/messages";
 import { MemorySaver } from "@langchain/langgraph";
-import { retrieverTool, saveClientDataTool, contactTool, setAvailableForAudioTool, validateCityTool, updateNotificationsTool, } from '../tools/tools';
+import { retrieverTool, saveClientDataTool, contactTool, setAvailableForAudioTool, validateCityTool, updateNotificationsTool, jobOpportunitiesTool, } from '../tools/tools';
 import { MESSAGES } from '../config/constants';
 dotenv.config();
 const memory = new MemorySaver();
@@ -20,6 +20,7 @@ const tools = [
     setAvailableForAudioTool,
     validateCityTool,
     updateNotificationsTool,
+    jobOpportunitiesTool,
 ];
 const modifyMessages = (messages) => {
     return [

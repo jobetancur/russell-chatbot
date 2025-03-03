@@ -10,6 +10,7 @@ import {
     setAvailableForAudioTool,
     validateCityTool,
     updateNotificationsTool,
+    jobOpportunitiesTool,
 } from '../tools/tools';
 import { MESSAGES } from '../config/constants';
 
@@ -31,6 +32,7 @@ const tools = [
     setAvailableForAudioTool,
     validateCityTool,
     updateNotificationsTool,
+    jobOpportunitiesTool,
 ];
 
 const modifyMessages = (messages: BaseMessage[]) => {

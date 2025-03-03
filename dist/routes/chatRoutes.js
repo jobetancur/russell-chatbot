@@ -49,7 +49,7 @@ const app = initializeApp(firebaseConfig);
 const storage = getStorage();
 let exportedFromNumber;
 // Ruta para enviar mensajes de WhatsApp
-router.post("/russell/send-message", async (req, res) => {
+router.post("/russell-chat/send-message", async (req, res) => {
     const { to, body } = req.body;
     console.log(req.body);
     try {
@@ -71,7 +71,7 @@ router.post("/russell/send-message", async (req, res) => {
     }
 });
 // chat endpoint para recibir mensajes con twilio
-router.post("/russell/receive-message", async (req, res) => {
+router.post("/russell-chat/receive-message", async (req, res) => {
     const twiml = new MessagingResponse();
     // console.log('Mensaje recibido:', req.body);
     const from = req.body.From;
@@ -192,8 +192,8 @@ router.post("/russell/receive-message", async (req, res) => {
     }
 });
 // Ruta principal
-router.get("/russell/chat-test", (req, res) => {
-    res.send("Servidor de Russell Bedford funcionando correctamente con Typescript y Express.");
+router.get("/russell-chat/chat-test", (req, res) => {
+    res.send("Chat de Russell Bedford funcionando correctamente con Typescript y Express.");
 });
 export default router;
 export { exportedFromNumber };

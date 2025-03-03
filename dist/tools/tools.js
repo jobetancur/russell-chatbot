@@ -1,6 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { saveClientData, contactCustomerService, validateCity, updateNotifications } from '../utils/functions';
+import { saveClientData, contactCustomerService, validateCity, updateNotifications, jobOpportunities } from '../utils/functions';
 import { searchVectors } from "../utils/retrievers";
 import { setAvailableForAudio } from "../utils/setAvailableForAudio";
 export const retrieverTool = tool(async ({ query }) => {
@@ -64,5 +64,13 @@ export const updateNotificationsTool = tool(async () => {
 }, {
     name: "update_notifications",
     description: "Actualiza el campo notifications en la base de datos de Supabase en la tabla chat_history a FALSE. Esta tool se debe ejecutar cuando el cliente manifieste que no está interesado en los servicios de Russell o que no quiera recibir mas notificaciones.",
+    schema: z.object({}),
+});
+export const jobOpportunitiesTool = tool(async () => {
+    const jobOpportunitiesData = jobOpportunities();
+    return jobOpportunitiesData;
+}, {
+    name: "job_opportunities",
+    description: "Brinda información sobre las oportunidades laborales en Russell Bedford. Esta tool se debe ejecutar cuando el cliente solicita información sobre las oportunidades laborales en la firma. Retorna los correos de contacto para enviar la hoja de vida.",
     schema: z.object({}),
 });
