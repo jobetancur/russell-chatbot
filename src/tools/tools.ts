@@ -1,6 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { saveClientData, contactCustomerService, validateCity } from '../utils/functions';
+import { saveClientData, contactCustomerService, validateCity, updateNotifications } from '../utils/functions';
 import { searchVectors } from "../utils/retrievers";
 import { setAvailableForAudio } from "../utils/setAvailableForAudio";
 
@@ -76,5 +76,17 @@ export const validateCityTool = tool(
     schema: z.object({
       city: z.string(),
     }),
+  }
+);
+
+export const updateNotificationsTool = tool(
+  async () => {
+    const notificationsUpdated = await updateNotifications();
+    return notificationsUpdated;
+  },
+  {
+    name: "update_notifications",
+    description: "Actualiza el campo notifications en la base de datos de Supabase en la tabla chat_history a FALSE. Esta tool se debe ejecutar cuando el cliente manifieste que no está interesado en los servicios de Russell o que no quiera recibir mas notificaciones.",
+    schema: z.object({}),
   }
 );

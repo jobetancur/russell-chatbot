@@ -9,6 +9,7 @@ import {
     contactTool,
     setAvailableForAudioTool,
     validateCityTool,
+    updateNotificationsTool,
 } from '../tools/tools';
 import { MESSAGES } from '../config/constants';
 
@@ -29,6 +30,7 @@ const tools = [
     contactTool,
     setAvailableForAudioTool,
     validateCityTool,
+    updateNotificationsTool,
 ];
 
 const modifyMessages = (messages: BaseMessage[]) => {

@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import colombia from '../data/colombia.json';
 import { setChatHistoryName } from './setChatHistoryName';
 import { setChatHistoryService } from './setChatHistoryService';
+import { exportedFromNumber } from '../routes/chatRoutes';
 
 dotenv.config();
 
@@ -114,4 +115,28 @@ export function validateCity(city: string): string {
   }
 
   return "Lo siento, actualmente no tenemos cobertura en tu ciudad. Puedes comunicarte en el siguiente enlace: https://wa.me/573186925681";
+}
+
+// Función para cambiar el campo notifications en la base de datos de Supabase en la tabla chat_history a FALSE.
+export async function updateNotifications() {
+  try {
+    const { data: chatHistory, error } = await supabase
+      .from('chat_history')
+      .select('id')
+      .eq('client_number', exportedFromNumber)
+      .single();
+
+    if (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+
+    if (chatHistory) {
+      await supabase
+        .from("chat_history")
+        .update({ notifications: false })
+        .eq("id", chatHistory.id);
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
