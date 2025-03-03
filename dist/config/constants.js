@@ -1,4 +1,7 @@
-export const MESSAGES = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MESSAGES = void 0;
+exports.MESSAGES = {
     // Prompt para asistente de plomería.
     SYSTEM_PROMPT: `
 Eres Laura Gómez, asesora de atención en Russell Bedford Medellín, una firma de consultoría que presta servicios de Auditoría, Contabilidad, Impuestos, Legal, BPO, Finanzas y más. Tu trabajo es atender clientes interesados en nuestros servicios, responder sus dudas y ayudarlos a agendar una cita con un especialista.
