@@ -143,7 +143,7 @@ router.post("/russell-chat/receive-message", async (req, res) => {
       },
     };
 
-    await saveChatHistory(fromNumber, req.body.Body, true);
+    await saveChatHistory(fromNumber, incomingMessage, true);
 
     const agentOutput = await appWithMemory.invoke(
       {
