@@ -153,7 +153,7 @@ router.post("/russell-chat/receive-message", (req, res) => __awaiter(void 0, voi
                 thread_id: from,
             },
         };
-        yield (0, saveChatHistory_1.saveChatHistory)(fromNumber, req.body.Body, true);
+        yield (0, saveChatHistory_1.saveChatHistory)(fromNumber, incomingMessage, true);
         const agentOutput = yield mainAgent_1.appWithMemory.invoke({
             messages: [new messages_1.HumanMessage(incomingMessage)],
         }, config);
