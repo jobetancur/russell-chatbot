@@ -104,8 +104,12 @@ router.post("/russell-chat/receive-message", async (req, res) => {
 
   exportedFromNumber = fromNumber
 
+  console.log("Raw request body:", JSON.stringify(req.body, null, 2));
+
   try {
     let incomingMessage
+
+    console.log('Incoming message Type:', req.body.Body);
 
     if ( req.body.MediaContentType0 && req.body.MediaContentType0.includes('audio') ) {
       try {
@@ -135,26 +139,39 @@ router.post("/russell-chat/receive-message", async (req, res) => {
       }
     } else {
       incomingMessage = req.body.Body;
+      console.log('Incoming message in else:', incomingMessage);
     }
 
     const config = {
       configurable: {
-        thread_id: from,
+        thread_id: fromNumber,
       },
     };
+
+    console.log("Mensaje recibido antes de .invoke:", incomingMessage);
 
     await saveChatHistory(fromNumber, incomingMessage, true);
 
     const agentOutput = await appWithMemory.invoke(
       {
-        messages: [new HumanMessage(incomingMessage)],
+        messages: [
+          new HumanMessage(incomingMessage)
+        ],
       },
       config
     );
 
-    const responseMessage = agentOutput.messages[
-      agentOutput.messages.length - 1
-    ].content as string;
+    console.log("Respuesta completa de OpenAI:", JSON.stringify(agentOutput, null, 2));
+
+    const lastMessage = agentOutput.messages?.[agentOutput.messages.length - 1];
+    console.log("Último mensaje de la IA:", lastMessage);
+
+    if (!lastMessage || typeof lastMessage.content !== "string") {
+      console.error("Error: El mensaje de la IA es nulo o no es un string.");
+      return res.status(500).send({ error: "La IA no generó una respuesta válida." });
+    }
+
+    const responseMessage = lastMessage.content;
 
     console.log("Respuesta IA:", responseMessage);
 
