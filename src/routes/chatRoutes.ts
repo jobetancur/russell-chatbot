@@ -1,17 +1,23 @@
 import express from "express";
 import dotenv from "dotenv";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { appWithMemory } from "../agents/mainAgent";
 import { HumanMessage } from "@langchain/core/messages";
 import twilio from "twilio";
 import { saveChatHistory } from "../utils/saveChatHistory";
 import { initializeApp } from "firebase/app";
-import { OpenAI, toFile } from 'openai';
-import fetch from 'node-fetch';
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
-import { ElevenLabsClient } from 'elevenlabs';
+import { OpenAI, toFile } from "openai";
+import fetch from "node-fetch";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { ElevenLabsClient } from "elevenlabs";
 import { getAvailableForAudio } from "../utils/getAvailableForAudio";
+import { getAvailableChatOn } from "../utils/getAvailableChatOn";
 
 dotenv.config();
 
@@ -40,7 +46,7 @@ const createAudioStreamFromText = async (text: string): Promise<Buffer> => {
   for await (const chunk of audioStream) {
     chunks.push(chunk);
   }
-  
+
   const content = Buffer.concat(chunks);
   return content;
 };
@@ -51,7 +57,7 @@ const firebaseConfig = {
   projectId: process.env.FIREBASE_PROJECT_ID,
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID
+  appId: process.env.FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
@@ -87,13 +93,12 @@ router.post("/russell-chat/send-message", async (req, res) => {
 
 // chat endpoint para recibir mensajes con twilio
 router.post("/russell-chat/receive-message", async (req, res) => {
-
   const twiml = new MessagingResponse();
   // console.log('Mensaje recibido:', req.body);
   const from = req.body.From;
   const to = req.body.To;
 
-  console.log('from:', from, 'to:', to);
+  console.log("from:", from, "to:", to);
 
   // Parseo de numeros de telefono
   const fromColonIndex = from.indexOf(":");
@@ -102,142 +107,159 @@ router.post("/russell-chat/receive-message", async (req, res) => {
   const fromNumber = from.slice(fromColonIndex + 1);
   const toNumber = to.slice(toColonIndex + 1);
 
-  exportedFromNumber = fromNumber
+  exportedFromNumber = fromNumber;
 
   // console.log("Raw request body:", JSON.stringify(req.body, null, 2));
 
   try {
-    let incomingMessage
+    let incomingMessage;
 
     // console.log('Incoming message Type:', req.body.Body);
 
-    if ( req.body.MediaContentType0 && req.body.MediaContentType0.includes('audio') ) {
+    if (
+      req.body.MediaContentType0 &&
+      req.body.MediaContentType0.includes("audio")
+    ) {
       try {
         const mediaUrl = await req.body.MediaUrl0;
 
         const response = await fetch(mediaUrl, {
           headers: {
-            'Authorization': `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString('base64')}`
-          }
+            Authorization: `Basic ${Buffer.from(
+              `${accountSid}:${authToken}`
+            ).toString("base64")}`,
+          },
         });
 
-        const file = await toFile(response.body, 'recording.wav');
+        const file = await toFile(response.body, "recording.wav");
 
         const transcription = await openai.audio.transcriptions.create({
           file,
-          model: 'whisper-1',
-          prompt: "Por favor, transcribe el audio y asegúrate de escribir los números exactamente como se pronuncian, sin espacios, comas, ni puntos. Por ejemplo, un número de documento   debe ser transcrito como 1143939192."
+          model: "whisper-1",
+          prompt:
+            "Por favor, transcribe el audio y asegúrate de escribir los números exactamente como se pronuncian, sin espacios, comas, ni puntos. Por ejemplo, un número de documento   debe ser transcrito como 1143939192.",
         });
 
         const { text } = transcription;
         incomingMessage = text;
       } catch (error) {
-        console.error('Error transcribing audio:', error);
-        twiml.message("En este momento no puedo transcribir audios, por favor intenta con un mensaje de texto. O prueba grabando el audio nuevamente.");
-        res.writeHead(200, { 'Content-Type': 'text/xml' });
+        console.error("Error transcribing audio:", error);
+        twiml.message(
+          "En este momento no puedo transcribir audios, por favor intenta con un mensaje de texto. O prueba grabando el audio nuevamente."
+        );
+        res.writeHead(200, { "Content-Type": "text/xml" });
         res.end(twiml.toString());
       }
     } else {
       incomingMessage = req.body.Body;
     }
-    
-    const config = {
-      configurable: {
-        thread_id: fromNumber,
-      },
-    };
 
-    console.log('Incoming message:', incomingMessage);
+    // Validar si en el dashboard se encuentra activado el chat
+    const chatOn = await getAvailableChatOn(fromNumber);
 
-    await saveChatHistory(fromNumber, incomingMessage, true);
+    if (!chatOn) {
+      const config = {
+        configurable: {
+          thread_id: fromNumber,
+        },
+      };
 
-    const agentOutput = await appWithMemory.invoke(
-      {
-        messages: [
-          new HumanMessage(incomingMessage)
-        ],
-      },
-      config
-    );
+      console.log("Incoming message:", incomingMessage);
 
-    // console.log("Respuesta completa de OpenAI:", JSON.stringify(agentOutput, null, 2));
+      await saveChatHistory(fromNumber, incomingMessage, true);
 
-    const lastMessage = agentOutput.messages[agentOutput.messages.length - 1];
+      const agentOutput = await appWithMemory.invoke(
+        {
+          messages: [new HumanMessage(incomingMessage)],
+        },
+        config
+      );
 
-    if (!lastMessage || typeof lastMessage.content !== "string") {
-      console.error("Error: El mensaje de la IA es nulo o no es un string.");
-      return res.status(500).send({ error: "La IA no generó una respuesta válida." });
-    }
+      // console.log("Respuesta completa de OpenAI:", JSON.stringify(agentOutput, null, 2));
 
-    const responseMessage = lastMessage.content;
+      const lastMessage = agentOutput.messages[agentOutput.messages.length - 1];
 
-    console.log("Respuesta IA:", responseMessage);
-
-    await saveChatHistory(fromNumber, responseMessage, false);
-
-    const isAvailableForAudio = await getAvailableForAudio(fromNumber);
-
-    // Si la respuesta es menor a 600 caracteres && no contiene números, hacer TTS y enviar el audio
-    if ( 
-      responseMessage.length <= 600 && // Menor a 600 caracteres
-      !/\d/.test(responseMessage) && // No contiene números
-      !/\b(?:[A-Z]{2,}|\b(?:[A-Z]\.){2,}[A-Z]?)\b/.test(responseMessage) && // No contiene siglas
-      isAvailableForAudio // El cliente puede recibir audios
-    ) {
-      console.log('Entró a enviar audio');
-      try {
-        const audioBuffer = await createAudioStreamFromText(responseMessage);
-        const audioName = `${uuidv4()}.wav`;
-        // Subir el archivo de audio a Firebase Storage
-        const storageRef = ref(storage, `audios/${audioName}`);
-        const metadata = {
-          contentType: 'audio/mpeg',
-        };
-        const uploadTask = uploadBytesResumable(storageRef, audioBuffer, metadata);
-        // Esperar a que la subida complete y obtener la URL pública
-        uploadTask.on('state_changed',
-          (snapshot) => {
-            // Progreso de la subida (opcional)
-            console.log('Upload is in progress...');
-          },
-          (error) => {
-            throw new Error(`Upload failed: ${error.message}`);
-          },
-          async () => {
-            // Subida completada
-            const audioUrl = await getDownloadURL(uploadTask.snapshot.ref);
-            // Envía el archivo de audio a través de Twilio
-            await client.messages.create({
-              body: "Audio message",
-              from: to,
-              to: from,
-              mediaUrl: [audioUrl],
-            });
-            console.log('Audio message sent successfully');
-            res.writeHead(200, { 'Content-Type': 'text/xml' });
-            res.end(twiml.toString());
-          }
-        );
-      } catch (error) {
-        console.error('Error sending audio message:', error);
-        twiml.message(responseMessage);
-        res.writeHead(200, { 'Content-Type': 'text/xml' });
-        res.end(twiml.toString());
+      if (!lastMessage || typeof lastMessage.content !== "string") {
+        console.error("Error: El mensaje de la IA es nulo o no es un string.");
+        return res
+          .status(500)
+          .send({ error: "La IA no generó una respuesta válida." });
       }
-    } else {
-      // Responder con el texto si es mayor de 400 caracteres
-      try {
-        const message = await client.messages.create({
-          body: responseMessage,
-          from: 'whatsapp:+5745012081',
-          // from: 'whatsapp:+14155238886', // Sandbox Twilio
-          to: from,
-        });
-      } catch (error) {
-        console.error("Error sending message:", error);
+
+      const responseMessage = lastMessage.content;
+
+      console.log("Respuesta IA:", responseMessage);
+
+      await saveChatHistory(fromNumber, responseMessage, false);
+
+      const isAvailableForAudio = await getAvailableForAudio(fromNumber);
+
+      // Si la respuesta es menor a 600 caracteres && no contiene números, hacer TTS y enviar el audio
+      if (
+        responseMessage.length <= 600 && // Menor a 600 caracteres
+        !/\d/.test(responseMessage) && // No contiene números
+        !/\b(?:[A-Z]{2,}|\b(?:[A-Z]\.){2,}[A-Z]?)\b/.test(responseMessage) && // No contiene siglas
+        isAvailableForAudio // El cliente puede recibir audios
+      ) {
+        console.log("Entró a enviar audio");
+        try {
+          const audioBuffer = await createAudioStreamFromText(responseMessage);
+          const audioName = `${uuidv4()}.wav`;
+          // Subir el archivo de audio a Firebase Storage
+          const storageRef = ref(storage, `audios/${audioName}`);
+          const metadata = {
+            contentType: "audio/mpeg",
+          };
+          const uploadTask = uploadBytesResumable(
+            storageRef,
+            audioBuffer,
+            metadata
+          );
+          // Esperar a que la subida complete y obtener la URL pública
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              // Progreso de la subida (opcional)
+              console.log("Upload is in progress...");
+            },
+            (error) => {
+              throw new Error(`Upload failed: ${error.message}`);
+            },
+            async () => {
+              // Subida completada
+              const audioUrl = await getDownloadURL(uploadTask.snapshot.ref);
+              // Envía el archivo de audio a través de Twilio
+              await client.messages.create({
+                body: "Audio message",
+                from: to,
+                to: from,
+                mediaUrl: [audioUrl],
+              });
+              console.log("Audio message sent successfully");
+              res.writeHead(200, { "Content-Type": "text/xml" });
+              res.end(twiml.toString());
+            }
+          );
+        } catch (error) {
+          console.error("Error sending audio message:", error);
+          twiml.message(responseMessage);
+          res.writeHead(200, { "Content-Type": "text/xml" });
+          res.end(twiml.toString());
+        }
+      } else {
+        // Responder con el texto si es mayor de 400 caracteres
+        try {
+          const message = await client.messages.create({
+            body: responseMessage,
+            from: "whatsapp:+5745012081",
+            // from: 'whatsapp:+14155238886', // Sandbox Twilio
+            to: from,
+          });
+        } catch (error) {
+          console.error("Error sending message:", error);
+        }
       }
     }
-
   } catch (error) {
     console.error("Error in chat route:", error);
     res.status(500).send({
@@ -256,4 +278,4 @@ router.get("/russell-chat/chat-test", (req, res) => {
 
 export default router;
 
-export {exportedFromNumber};
+export { exportedFromNumber };
