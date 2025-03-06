@@ -119,8 +119,10 @@ router.post("/russell-chat/receive-message", (req, res) => __awaiter(void 0, voi
     const fromNumber = from.slice(fromColonIndex + 1);
     const toNumber = to.slice(toColonIndex + 1);
     exports.exportedFromNumber = exportedFromNumber = fromNumber;
+    // console.log("Raw request body:", JSON.stringify(req.body, null, 2));
     try {
         let incomingMessage;
+        // console.log('Incoming message Type:', req.body.Body);
         if (req.body.MediaContentType0 && req.body.MediaContentType0.includes('audio')) {
             try {
                 const mediaUrl = yield req.body.MediaUrl0;
@@ -150,14 +152,23 @@ router.post("/russell-chat/receive-message", (req, res) => __awaiter(void 0, voi
         }
         const config = {
             configurable: {
-                thread_id: from,
+                thread_id: fromNumber,
             },
         };
+        console.log('Incoming message:', incomingMessage);
         yield (0, saveChatHistory_1.saveChatHistory)(fromNumber, incomingMessage, true);
         const agentOutput = yield mainAgent_1.appWithMemory.invoke({
-            messages: [new messages_1.HumanMessage(incomingMessage)],
+            messages: [
+                new messages_1.HumanMessage(incomingMessage)
+            ],
         }, config);
-        const responseMessage = agentOutput.messages[agentOutput.messages.length - 1].content;
+        // console.log("Respuesta completa de OpenAI:", JSON.stringify(agentOutput, null, 2));
+        const lastMessage = agentOutput.messages[agentOutput.messages.length - 1];
+        if (!lastMessage || typeof lastMessage.content !== "string") {
+            console.error("Error: El mensaje de la IA es nulo o no es un string.");
+            return res.status(500).send({ error: "La IA no generó una respuesta válida." });
+        }
+        const responseMessage = lastMessage.content;
         console.log("Respuesta IA:", responseMessage);
         yield (0, saveChatHistory_1.saveChatHistory)(fromNumber, responseMessage, false);
         const isAvailableForAudio = yield (0, getAvailableForAudio_1.getAvailableForAudio)(fromNumber);
@@ -210,7 +221,8 @@ router.post("/russell-chat/receive-message", (req, res) => __awaiter(void 0, voi
             try {
                 const message = yield client.messages.create({
                     body: responseMessage,
-                    from: 'whatsapp:+5745012081',
+                    // from: 'whatsapp:+5745012081',
+                    from: 'whatsapp:+14155238886', // Sandbox Twilio
                     to: from,
                 });
             }

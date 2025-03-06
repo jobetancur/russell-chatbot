@@ -138,9 +138,11 @@ function updateNotifications() {
                     .update({ notifications: false })
                     .eq("id", chatHistory.id);
             }
+            return "Notificaciones actualizadas correctamente.";
         }
         catch (error) {
             console.error(error);
+            return "Error al actualizar las notificaciones.";
         }
     });
 }

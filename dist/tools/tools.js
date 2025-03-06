@@ -75,7 +75,7 @@ exports.updateNotificationsTool = (0, tools_1.tool)(() => __awaiter(void 0, void
     return notificationsUpdated;
 }), {
     name: "update_notifications",
-    description: "Actualiza el campo notifications en la base de datos de Supabase en la tabla chat_history a FALSE. Esta tool se debe ejecutar cuando el cliente manifieste que no está interesado en los servicios de Russell o que no quiera recibir mas notificaciones.",
+    description: "Actualiza el campo notifications en la base de datos de Supabase en la tabla chat_history a FALSE. Esta tool se debe ejecutar cuando el cliente manifieste de manera clara que no está interesado en los servicios de Russell o que no quiera recibir mas notificaciones. ",
     schema: zod_1.z.object({}),
 });
 exports.jobOpportunitiesTool = (0, tools_1.tool)(() => __awaiter(void 0, void 0, void 0, function* () {
