@@ -104,12 +104,12 @@ router.post("/russell-chat/receive-message", async (req, res) => {
 
   exportedFromNumber = fromNumber
 
-  console.log("Raw request body:", JSON.stringify(req.body, null, 2));
+  // console.log("Raw request body:", JSON.stringify(req.body, null, 2));
 
   try {
     let incomingMessage
 
-    console.log('Incoming message Type:', req.body.Body);
+    // console.log('Incoming message Type:', req.body.Body);
 
     if ( req.body.MediaContentType0 && req.body.MediaContentType0.includes('audio') ) {
       try {
@@ -139,16 +139,15 @@ router.post("/russell-chat/receive-message", async (req, res) => {
       }
     } else {
       incomingMessage = req.body.Body;
-      console.log('Incoming message in else:', incomingMessage);
     }
-
+    
     const config = {
       configurable: {
         thread_id: fromNumber,
       },
     };
 
-    console.log("Mensaje recibido antes de .invoke:", incomingMessage);
+    console.log('Incoming message:', incomingMessage);
 
     await saveChatHistory(fromNumber, incomingMessage, true);
 
@@ -161,10 +160,9 @@ router.post("/russell-chat/receive-message", async (req, res) => {
       config
     );
 
-    console.log("Respuesta completa de OpenAI:", JSON.stringify(agentOutput, null, 2));
+    // console.log("Respuesta completa de OpenAI:", JSON.stringify(agentOutput, null, 2));
 
-    const lastMessage = agentOutput.messages?.[agentOutput.messages.length - 1];
-    console.log("Último mensaje de la IA:", lastMessage);
+    const lastMessage = agentOutput.messages[agentOutput.messages.length - 1];
 
     if (!lastMessage || typeof lastMessage.content !== "string") {
       console.error("Error: El mensaje de la IA es nulo o no es un string.");
@@ -231,7 +229,8 @@ router.post("/russell-chat/receive-message", async (req, res) => {
       try {
         const message = await client.messages.create({
           body: responseMessage,
-          from: 'whatsapp:+5745012081',
+          // from: 'whatsapp:+5745012081',
+          from: 'whatsapp:+14155238886', // Sandbox Twilio
           to: from,
         });
       } catch (error) {
