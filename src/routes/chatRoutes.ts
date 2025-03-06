@@ -154,6 +154,8 @@ router.post("/russell-chat/receive-message", async (req, res) => {
       incomingMessage = req.body.Body;
     }
 
+    await saveChatHistory(fromNumber, incomingMessage, true);
+    
     // Validar si en el dashboard se encuentra activado el chat
     const chatOn = await getAvailableChatOn(fromNumber);
 
@@ -166,7 +168,6 @@ router.post("/russell-chat/receive-message", async (req, res) => {
 
       console.log("Incoming message:", incomingMessage);
 
-      await saveChatHistory(fromNumber, incomingMessage, true);
 
       const agentOutput = await appWithMemory.invoke(
         {

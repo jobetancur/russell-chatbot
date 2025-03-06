@@ -152,6 +152,7 @@ router.post("/russell-chat/receive-message", (req, res) => __awaiter(void 0, voi
         else {
             incomingMessage = req.body.Body;
         }
+        yield (0, saveChatHistory_1.saveChatHistory)(fromNumber, incomingMessage, true);
         // Validar si en el dashboard se encuentra activado el chat
         const chatOn = yield (0, getAvailableChatOn_1.getAvailableChatOn)(fromNumber);
         if (!chatOn) {
@@ -161,7 +162,6 @@ router.post("/russell-chat/receive-message", (req, res) => __awaiter(void 0, voi
                 },
             };
             console.log("Incoming message:", incomingMessage);
-            yield (0, saveChatHistory_1.saveChatHistory)(fromNumber, incomingMessage, true);
             const agentOutput = yield mainAgent_1.appWithMemory.invoke({
                 messages: [new messages_1.HumanMessage(incomingMessage)],
             }, config);
