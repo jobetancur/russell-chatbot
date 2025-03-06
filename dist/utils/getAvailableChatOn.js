@@ -20,7 +20,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 // Supabase connection
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_KEY;
 exports.supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseKey);
 // Función para consultar si una persona esta disponible para mandarle audios
 function getAvailableChatOn(clientNumber) {
