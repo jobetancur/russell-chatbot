@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { BaseMessage, SystemMessage } from "@langchain/core/messages";
+import { BaseMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { MemorySaver } from "@langchain/langgraph";
 import { 
     retrieverTool,
@@ -11,8 +11,10 @@ import {
     validateCityTool,
     updateNotificationsTool,
     jobOpportunitiesTool,
+    fetchUserNameTool,
 } from '../tools/tools';
 import { MESSAGES } from '../config/constants';
+import { exportedFromNumber } from '../routes/chatRoutes';
 
 dotenv.config();
 
@@ -33,11 +35,13 @@ const tools = [
     validateCityTool,
     updateNotificationsTool,
     jobOpportunitiesTool,
+    fetchUserNameTool,
 ];
 
 const modifyMessages = (messages: BaseMessage[]) => {
     return [
       new SystemMessage(MESSAGES.SYSTEM_PROMPT),
+      new HumanMessage(`Este es el número de teléfono: ${exportedFromNumber}`),
       ...messages,
     ];
 };

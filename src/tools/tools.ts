@@ -1,6 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { saveClientData, contactCustomerService, validateCity, updateNotifications, jobOpportunities } from '../utils/functions';
+import { saveClientData, contactCustomerService, validateCity, updateNotifications, jobOpportunities, fetchUserName } from '../utils/functions';
 import { searchVectors } from "../utils/retrievers";
 import { setAvailableForAudio } from "../utils/setAvailableForAudio";
 
@@ -100,5 +100,20 @@ export const jobOpportunitiesTool = tool(
     name: "job_opportunities",
     description: "Brinda información sobre las oportunidades laborales en Russell Bedford. Esta tool se debe ejecutar cuando el cliente solicita información sobre las oportunidades laborales en la firma. Retorna los correos de contacto para enviar la hoja de vida.",
     schema: z.object({}),
+  }
+);
+
+//Tool para consultar el nombre del cliente por su número de celular.
+export const fetchUserNameTool = tool(
+  async ({ phoneNumber }: { phoneNumber: string }) => {
+    const userName = await fetchUserName(phoneNumber);
+    return userName;
+  },
+  {
+    name: "fetch_user_name",
+    description: "Obtiene el nombre del cliente. Esto se hace para personalizar la conversación y hacerla más amigable. Ejecuta esta tool para obtener su nombre y dirigirte a él de manera más personalizada.",
+    schema: z.object({
+      phoneNumber: z.string(),
+    }),
   }
 );

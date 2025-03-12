@@ -170,3 +170,27 @@ export function jobOpportunities() {
   
   return JSON.stringify(jobOpportunitiesData);
 }
+
+export async function fetchUserName(firstNumber: string) {
+  console.log('fetchUserName:', firstNumber);
+
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('phone', firstNumber)
+    .single();
+
+  if (error) {
+    console.error('Error fetching user:', error);
+    return "No se encontró el nombre del cliente. Por favor, proporcione el número de documento.";
+  }
+  
+  // Actualizar el nombre del cliente en el historial del chat
+  if (data.name) {
+    await setChatHistoryName(data.name);
+  }
+
+  console.log('User:', data);
+
+  return JSON.stringify(data);
+}
