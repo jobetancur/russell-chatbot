@@ -182,7 +182,7 @@ export async function fetchUserName(firstNumber: string) {
 
   if (error) {
     console.error('Error fetching user:', error);
-    return "No se encontró el nombre del cliente. Por favor, proporcione el número de documento.";
+    return "No se encontró el nombre del cliente.";
   }
   
   // Actualizar el nombre del cliente en el historial del chat
