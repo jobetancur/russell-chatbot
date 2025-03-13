@@ -111,7 +111,7 @@ export const fetchUserNameTool = tool(
   },
   {
     name: "fetch_user_name",
-    description: "Obtiene el nombre del cliente. Esto se hace para personalizar la conversación y hacerla más amigable. Ejecuta esta tool para obtener su nombre y dirigirte a él de manera más personalizada.",
+    description: "Obtiene el nombre del cliente. Esto se hace para personalizar la conversación y hacerla más amigable. Ejecuta esta tool para obtener su nombre y dirigirte a él de manera más personalizada. Siempre ejecuta esta tool en el saludo inicial para validar si tenemos el nombre del cliente y el servicio que necesita. Si no tenemos información, continua con la conversación de manera normal.",
     schema: z.object({
       phoneNumber: z.string(),
     }),
