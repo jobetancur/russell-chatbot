@@ -252,8 +252,8 @@ router.post("/russell-chat/receive-message", async (req, res) => {
         try {
           const message = await client.messages.create({
             body: responseMessage,
-            // from: "whatsapp:+5745012081",
-            from: 'whatsapp:+14155238886', // Sandbox Twilio
+            from: "whatsapp:+5745012081",
+            // from: 'whatsapp:+14155238886', // Sandbox Twilio
             to: from,
           });
         } catch (error) {
