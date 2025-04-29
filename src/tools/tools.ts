@@ -1,6 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { saveClientData, contactCustomerService, validateCity, updateNotifications, jobOpportunities, fetchUserName } from '../utils/functions';
+import { saveClientData, contactCustomerService, validateCity, updateNotifications, jobOpportunities, fetchUserName, validateAppointmentDate } from '../utils/functions';
 import { searchVectors } from "../utils/retrievers";
 import { setAvailableForAudio } from "../utils/setAvailableForAudio";
 
@@ -114,6 +114,20 @@ export const fetchUserNameTool = tool(
     description: "Obtiene el nombre del cliente. Esto se hace para personalizar la conversación y hacerla más amigable. Ejecuta esta tool para obtener su nombre y dirigirte a él de manera más personalizada. Siempre ejecuta esta tool en el saludo inicial para validar si tenemos el nombre del cliente y el servicio que necesita. Si no tenemos información, continua con la conversación de manera normal.",
     schema: z.object({
       phoneNumber: z.string(),
+    }),
+  }
+);
+
+export const validateAppointmentDateTool = tool(
+  async ({ dateString }: { dateString: string }) => {
+    const validation = validateAppointmentDate(dateString);
+    return JSON.stringify(validation);
+  },
+  {
+    name: "validate_appointment_date",
+    description: "Valida si una fecha proporcionada por el cliente es válida para agendar una cita. La fecha debe ser para un día posterior al actual. Reconoce formatos como 'DD de mes', 'DD/MM', 'mañana', 'pasado mañana', etc.",
+    schema: z.object({
+      dateString: z.string(),
     }),
   }
 );

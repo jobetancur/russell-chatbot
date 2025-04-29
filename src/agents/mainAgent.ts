@@ -12,6 +12,7 @@ import {
     updateNotificationsTool,
     jobOpportunitiesTool,
     fetchUserNameTool,
+    validateAppointmentDateTool,
 } from '../tools/tools';
 import { MESSAGES } from '../config/constants';
 import { exportedFromNumber } from '../routes/chatRoutes';
@@ -36,6 +37,7 @@ const tools = [
     updateNotificationsTool,
     jobOpportunitiesTool,
     fetchUserNameTool,
+    validateAppointmentDateTool,
 ];
 
 const modifyMessages = (messages: BaseMessage[]) => {

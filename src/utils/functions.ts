@@ -195,3 +195,105 @@ export async function fetchUserName(firstNumber: string) {
 
   return JSON.stringify(data);
 }
+
+// Función para validar si una fecha es válida para una cita (posterior a la fecha actual)
+export function validateAppointmentDate(dateString: string): { isValid: boolean; message: string } {
+  try {
+    // Intentar interpretar la fecha proporcionada
+    const possibleFormats = [
+      new RegExp(/(\d{1,2})\s+de\s+([a-zA-Záéíóú]+)(?:\s+(?:de\s+)?(\d{4}))?/i), // "29 de abril" o "29 de abril de 2025"
+      new RegExp(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/), // "29/04" o "29/04/2025"
+      new RegExp(/mañana/i),
+      new RegExp(/pasado\s+mañana/i),
+    ];
+
+    let scheduledDate: Date;
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dayAfterTomorrow = new Date(now);
+    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+
+    // Comprobar formatos específicos
+    if (dateString.match(/mañana/i)) {
+      scheduledDate = new Date(tomorrow);
+    } else if (dateString.match(/pasado\s+mañana/i)) {
+      scheduledDate = new Date(dayAfterTomorrow);
+    } else {
+      // Intentar analizar formatos de fecha español
+      const match1 = dateString.match(possibleFormats[0]);
+      if (match1) {
+        const day = parseInt(match1[1], 10);
+        const monthName = match1[2].toLowerCase();
+        const year = match1[3] ? parseInt(match1[3], 10) : currentYear;
+        
+        const months: { [key: string]: number } = {
+          'enero': 0, 'febrero': 1, 'marzo': 2, 'abril': 3,
+          'mayo': 4, 'junio': 5, 'julio': 6, 'agosto': 7,
+          'septiembre': 8, 'octubre': 9, 'noviembre': 10, 'diciembre': 11
+        };
+        
+        if (months[monthName] === undefined) {
+          return { 
+            isValid: false, 
+            message: `No pude reconocer el mes "${monthName}". Por favor, proporciona la fecha en formato "día de mes" (ej: 29 de abril).`
+          };
+        }
+        
+        scheduledDate = new Date(year, months[monthName], day);
+      } else {
+        // Intentar formato DD/MM/YYYY
+        const match2 = dateString.match(possibleFormats[1]);
+        if (match2) {
+          const day = parseInt(match2[1], 10);
+          const month = parseInt(match2[2], 10) - 1; // Los meses en JS son 0-indexed
+          const year = match2[3] ? parseInt(match2[3], 10) : currentYear;
+          
+          scheduledDate = new Date(year, month, day);
+        } else {
+          // Último intento: usar Date.parse
+          const parsedDate = Date.parse(dateString);
+          
+          if (isNaN(parsedDate)) {
+            return {
+              isValid: false,
+              message: "No pude entender el formato de fecha. Por favor, proporciona la fecha en formato DD/MM/YYYY o 'día de mes' (ej: 29 de abril)."
+            };
+          }
+          
+          scheduledDate = new Date(parsedDate);
+        }
+      }
+    }
+
+    // Asegurar que la fecha tenga la hora actual para comparaciones justas
+    if (!dateString.includes(':')) {
+      // Si no se especificó hora, configuramos a las 0:00
+      scheduledDate.setHours(0, 0, 0, 0);
+      // Y también ajustamos la fecha actual para comparar solo días
+      now.setHours(0, 0, 0, 0);
+    }
+
+    // Validar que la fecha sea posterior al día actual
+    if (scheduledDate < now) {
+      return {
+        isValid: false,
+        message: "La fecha proporcionada ya pasó o es hoy. Por favor, proporciona una fecha posterior al día de hoy."
+      };
+    }
+
+    // Si la fecha es para mañana o después, es válida
+    return {
+      isValid: true,
+      message: `La fecha ${scheduledDate.toLocaleDateString('es-CO')} es válida para agendar una cita.`
+    };
+    
+  } catch (error) {
+    console.error("Error validando la fecha:", error);
+    return {
+      isValid: false,
+      message: "No es posible validar esta fecha. Por favor, proporciona la fecha en formato DD/MM/YYYY o 'día de mes' (ej: 29 de abril)."
+    };
+  }
+}
